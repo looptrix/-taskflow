@@ -30,6 +30,25 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: taskflow-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgres://taskflow:taskflow_dev@postgres:5432/taskflow?sslmode=disable
+      REDIS_ADDR: redis:6379
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
 volumes:
   taskflow_postgres_data:
   taskflow_redis_data:
